@@ -20,56 +20,33 @@ public class DatabaseOperation {
         }
     }
 
-    public static void addClassDB(String cal) throws SQLException {
-        int i;
-        String id = "select id from class";
-        Statement statement = con.createStatement();
-        ResultSet resultSet = statement.executeQuery(id);
-        if (resultSet.next()) {
-            i = resultSet.getInt("id");
-        } else {
-            i = 0;
+    public static void dbAssignSubjectClass(String cl, String sb){
+        try {
+            String query = "insert into academy values(?,?,?,?)";
+            int id = DBvalidation.getId(con);
+            PreparedStatement preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, id);
+            preparedStatement.setString(2, cl.toUpperCase());
+            preparedStatement.setString(3, sb.toUpperCase());
+            preparedStatement.setString(4, null);
+            preparedStatement.execute();
+        }catch (SQLException sql){
+            System.out.println("Invalid SQL Syntax");
         }
-        PreparedStatement preparedStatement = con.prepareStatement("insert into class values(?,?)");
-        preparedStatement.setInt(1, i+1);
-        preparedStatement.setString(2,cal);
-        int ps = preparedStatement.executeUpdate();
-        System.out.println(ps + " records inserted");
     }
 
-    public static void addSubjectDB(String subject) throws SQLException {
-        int i;
-        String id = "select id from subjects";
-        Statement statement = con.createStatement();
-        ResultSet resultSet = statement.executeQuery(id);
-        if (resultSet.next()) {
-            i = resultSet.getInt("id");
-        } else {
-            i = 0;
+    public static void dbAssignTeachertoClassSub(String clas, String subject, String teacher) {
+        try {
+            String query = String.format("update academy set teachers=\"%s\" where classes=\"%s\" and subjects = \"%s\";",teacher, clas, subject);
+            Statement statement = con.createStatement();
+            if (DBvalidation.checkTeacher(clas, subject, con)) {
+                statement.executeUpdate(query);
+            }
+        } catch (SQLException e) {
+            System.out.println("Invalid SQL Syntax");
         }
-        PreparedStatement preparedStatement = con.prepareStatement("insert into subjects values(?,?)");
-        preparedStatement.setInt(1, i+1);
-        preparedStatement.setString(2,subject);
-        int ps = preparedStatement.executeUpdate();
-        System.out.println(ps + " records inserted");
     }
 
-    public static void addTeacherDB(String teacher) throws SQLException {
-        int i;
-        String id = "select id from teachers";
-        Statement statement = con.createStatement();
-        ResultSet resultSet = statement.executeQuery(id);
-        if (resultSet.next()) {
-            i = resultSet.getInt("id");
-        } else {
-            i = 0;
-        }
-        PreparedStatement preparedStatement = con.prepareStatement("insert into teachers values(?,?)");
-        preparedStatement.setInt(1, i+1);
-        preparedStatement.setString(2,teacher);
-        int ps = preparedStatement.executeUpdate();
-        System.out.println(ps + " records inserted");
-    }
 
     private void checkAdmin(String adminUser, String adminPass) throws SQLException {
         String query = "select * from admin";

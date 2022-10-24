@@ -1,82 +1,116 @@
 package service;
 
 import dao.DatabaseOperation;
+
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Service {
+    static int choice;
     private static Scanner scanner = new Scanner(System.in);
+    private static List cls = classess();
+    private static List subs = subjects();
+    private static List teachs = teachers();
+
+    private static List<String> classess() {
+        List<String> classes = new ArrayList<>();
+        classes.add("One");
+        classes.add("second");
+        classes.add("third");
+        classes.add("fourth");
+        classes.add("fifth");
+        classes.add("sixth");
+        classes.add("seventh");
+        classes.add("eighth");
+        classes.add("ninth");
+        classes.add("tenth");
+        return classes;
+    }
+
+    private static List<String> subjects() {
+        List<String> subjects = new ArrayList<>();
+        subjects.add("Kannada");
+        subjects.add("English");
+        subjects.add("Hindi");
+        subjects.add("Maths");
+        subjects.add("Science");
+        subjects.add("Social");
+        return subjects;
+    }
+
+    private static List<String> teachers() {
+        List<String> teachers = new ArrayList<>();
+        teachers.add("Mounish");
+        teachers.add("Ravali");
+        teachers.add("Ratnam");
+        teachers.add("Chandrakala");
+        teachers.add("Madhavi");
+        return teachers;
+    }
+
     public static void menu() throws SQLException {
         System.out.println("Select your operation" + "\n" +
-                "1. Add subject" + "\n" +
-                "2. Add teacher" +"\n" +
-                "3. Add class" +"\n" +
-                "4. Assign classes for subjects" +"\n" +
-                "5. Assign teachers for class for a subject" +"\n" +
-                "6. List of students" +"\n" +
-                "7. Class report");
+                "1. Assign subjects to classes" + "\n" +
+                "2. Assign Teacher to class and subject");
         System.out.print("Enter you choice: ");
-        int choice = scanner.nextInt();
-        switch (choice){
+        try {
+            choice = scanner.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("Enter correct choice");
+        }
+        switch (choice) {
             case 1:
-                addSubject();
+                assignSubjectToClass();
                 break;
             case 2:
-                addTeacher();
-                break;
-            case 3:
-                addClass();
-                break;
-            case 4:
-                assignClassToSubject();
-                break;
-            case 5:
-                assignTeacherToClassForSubject();
-                break;
-            case 6:
-                listOfStudents();
-                break;
-            case 7:
-                classReport();
+                assignTeacherToClassSubject();
                 break;
             default:
-                break;
+                System.out.println("Invalid input");
         }
     }
 
-    private static void addClass() throws SQLException {
+    private static void assignTeacherToClassSubject() throws SQLException {
         System.out.print("Enter class: ");
         String clas = scanner.next();
-        DatabaseOperation.addClassDB(clas);
+        for (Object cl : cls) {
+            if (clas.equalsIgnoreCase((String) cl)) {
+                System.out.print("Enter subject: ");
+                String subject = scanner.next();
+                for (Object sub : subs) {
+                    if (subject.equalsIgnoreCase((String) sub)) {
+                        System.out.print("Enter the teacher name: ");
+                        String teacher = scanner.next();
+                        for (Object teach : teachs) {
+                            if (teacher.equalsIgnoreCase((String) teach)) {
+                                DatabaseOperation.dbAssignTeachertoClassSub(clas, subject, teacher);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    private static void assignClassToSubject() {
-        System.out.println("assign class to subject");
+    private static void assignSubjectToClass(){
+        System.out.print("Enter the class to assign subject: ");
+        String clas = scanner.next();
+        for (Object cl : cls) {
+            if (clas.equalsIgnoreCase((String) cl)) {
+                System.out.print("Enter subject: ");
+                String sub = scanner.next();
+                for (Object sb : subs) {
+                    if (sub.equalsIgnoreCase((String) sb)) {
+                        DatabaseOperation.dbAssignSubjectClass(clas, sub);
+                    }
+                }
+            }
+        }
     }
 
-    private static void assignTeacherToClassForSubject() {
-        System.out.println("assign teacher to class for subject");
-    }
-
-    private static void listOfStudents() {
-        System.out.println("list of students");
-    }
-
-    private static void classReport() {
-        System.out.println("class report");
-    }
-
-    private static void addTeacher() throws SQLException {
-        System.out.print("Enter teacher name: ");
-        String teacher = scanner.next();
-        DatabaseOperation.addTeacherDB(teacher);
-    }
-
-    private static void addSubject() throws SQLException {
-        System.out.print("Enter subject: ");
-        String subject = scanner.next();
-        DatabaseOperation.addSubjectDB(subject);
-    }
 
     public static void adminLogin() throws SQLException {
         System.out.println("---------------Login-------------");
@@ -87,3 +121,4 @@ public class Service {
         new DatabaseOperation(adminUser, adminPass);
     }
 }
+

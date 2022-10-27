@@ -17,7 +17,7 @@ public class Service {
 
     private static List<String> classess() {
         List<String> classes = new ArrayList<>();
-        classes.add("One");
+        classes.add("first");
         classes.add("second");
         classes.add("third");
         classes.add("fourth");
@@ -51,10 +51,12 @@ public class Service {
         return teachers;
     }
 
-    public static void menu() throws SQLException {
+    public static void menu() throws SQLException, ClassNotFoundException {
         System.out.println("Select your operation" + "\n" +
                 "1. Assign subjects to classes" + "\n" +
-                "2. Assign Teacher to class and subject");
+                "2. Assign Teacher to class and subject" + "\n" +
+                "3. Assign student to class" + "\n" +
+                "4. Detailed Report");
         System.out.print("Enter you choice: ");
         try {
             choice = scanner.nextInt();
@@ -68,9 +70,24 @@ public class Service {
             case 2:
                 assignTeacherToClassSubject();
                 break;
+            case 3:
+                assignStudentToClass();
+                break;
+            case 4:
+                DatabaseOperation.getReport();
+                break;
             default:
                 System.out.println("Invalid input");
         }
+    }
+
+
+    private static void assignStudentToClass() throws SQLException {
+        System.out.print("Enter the student name: ");
+        String student = scanner.next();
+        System.out.print("Enter the class to be assigned: ");
+        String cls = scanner.next();
+        DatabaseOperation.dbAssignStudentToClass(student, cls);
     }
 
     private static void assignTeacherToClassSubject() throws SQLException {
@@ -95,7 +112,7 @@ public class Service {
         }
     }
 
-    private static void assignSubjectToClass(){
+    private static void assignSubjectToClass() {
         System.out.print("Enter the class to assign subject: ");
         String clas = scanner.next();
         for (Object cl : cls) {
